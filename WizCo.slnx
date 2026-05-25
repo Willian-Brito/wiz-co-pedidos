@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Core/">
+    <Project Path="src/Core/WizCo.Core.Application/WizCo.Core.Application.csproj" />
+    <Project Path="src/Core/WizCo.Core.Domain/WizCo.Core.Domain.csproj" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="src/Infrastructure/WizCo.Infra.Data/WizCo.Infra.Data.csproj" />
+    <Project Path="src/Infrastructure/WizCo.Infra.IoC/WizCo.Infra.IoC.csproj" />
+  </Folder>
+  <Folder Name="/src/Presentation/">
+    <Project Path="src/Presentation/WizCo.Presentation.WebAPI/WizCo.Presentation.WebAPI.csproj" />
+    <Project Path="src/Presentation/WizCo.Presentation.WebUI/WizCo.Presentation.WebUI.csproj" />
+  </Folder>
+  <Folder Name="/src/Tests/">
+    <Project Path="src/Tests/WizCo.Tests.IntegrationTest/WizCo.Tests.IntegrationTest.csproj" />
+    <Project Path="src/Tests/WizCo.Tests.UnitTest/WizCo.Tests.UnitTest.csproj" />
+  </Folder>
+</Solution>
