@@ -10,7 +10,6 @@
   </Folder>
   <Folder Name="/src/Presentation/">
     <Project Path="src/Presentation/WizCo.Presentation.WebAPI/WizCo.Presentation.WebAPI.csproj" />
-    <Project Path="src/Presentation/WizCo.Presentation.WebUI/WizCo.Presentation.WebUI.csproj" />
   </Folder>
   <Folder Name="/src/Tests/">
     <Project Path="src/Tests/WizCo.Tests.IntegrationTest/WizCo.Tests.IntegrationTest.csproj" />
