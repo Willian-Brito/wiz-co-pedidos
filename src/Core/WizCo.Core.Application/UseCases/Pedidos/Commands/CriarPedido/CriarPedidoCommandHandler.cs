@@ -33,8 +33,8 @@ public class CriarPedidoCommandHandler : CommandHandler, IRequestHandler<CriarPe
 
         var pedido = new Pedido(message.ClienteNome, itens);
 
-        await _pedidoRepository.AddAsync(pedido, cancellationToken);
-        await _unitOfWork.CommitAsync(cancellationToken);
+        await _pedidoRepository.AddAsync(pedido);
+        await _unitOfWork.Commit();
         var response = _mapper.Map<PedidoDTO>(pedido);
         
         return Result<PedidoDTO>.Ok(response);

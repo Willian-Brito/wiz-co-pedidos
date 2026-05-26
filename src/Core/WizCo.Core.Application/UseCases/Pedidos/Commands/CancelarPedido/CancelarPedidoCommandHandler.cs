@@ -25,7 +25,7 @@ public class CancelarPedidoCommandHandler  : CommandHandler, IRequestHandler<Can
 
         pedido.Cancelar();
         _pedidoRepository.Update(pedido);
-        await _unitOfWork.CommitAsync(cancellationToken);;
+        await _unitOfWork.Commit();
 
         return Result.Ok();
     }

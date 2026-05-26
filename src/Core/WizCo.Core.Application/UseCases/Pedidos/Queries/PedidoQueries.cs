@@ -1,7 +1,7 @@
 using AutoMapper;
-using WizCo.Core.Application.Extensions;
 using WizCo.Core.Application.Results;
 using WizCo.Core.Application.UseCases.Pedidos.DTOs;
+using WizCo.Core.Domain.Common;
 using WizCo.Core.Domain.Enums;
 using WizCo.Core.Domain.Interfaces;
 
@@ -18,11 +18,10 @@ public class PedidoQueries : IPedidoQueries
         _mapper = mapper;
     }
 
-    public async Task<Result<PagedResult<PedidoDTO>>> GetAll(int page, int pageSize, string query = null)
+    public async Task<Result<PagedResult<PedidoDTO>>> GetAllPagedAsync(int page, int pageSize)
     {
-        var pedidos = await _pedidoRepository.GetAll(page, pageSize);
-        var pedidoDtos = _mapper.Map<IEnumerable<PedidoDTO>>(pedidos); 
-        var response = pedidoDtos.ToPagedList(page, pageSize, query);
+        var pedidos = _pedidoRepository.GetAllPaged(page, pageSize);
+        var response = _mapper.Map<PagedResult<PedidoDTO>>(pedidos);
 
         return Result<PagedResult<PedidoDTO>>.Ok(response);
     }
@@ -39,11 +38,10 @@ public class PedidoQueries : IPedidoQueries
         return Result<PedidoDTO>.Ok(response);
     }
 
-    public async Task<Result<PagedResult<PedidoDTO>>> GetByStatusAsync(StatusPedido? status, int page, int pageSize)
+    public async Task<Result<PagedResult<PedidoDTO>>> GetByStatusPagedAsync(StatusPedido? status, int page, int pageSize)
     {
         var pedidos = await _pedidoRepository.GetByStatusAsync(status, page, pageSize);
-        var pedidoDtos = _mapper.Map<IEnumerable<PedidoDTO>>(pedidos); 
-        var response = pedidoDtos.ToPagedList(page, pageSize);
+        var response = _mapper.Map<PagedResult<PedidoDTO>>(pedidos);
         
         return Result<PagedResult<PedidoDTO>>.Ok(response); 
     }
