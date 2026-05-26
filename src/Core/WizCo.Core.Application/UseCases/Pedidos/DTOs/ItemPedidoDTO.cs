@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace WizCo.Core.Application.UseCases.Pedidos.DTOs;
 
 public class ItemPedidoDTO
@@ -10,5 +12,6 @@ public class ItemPedidoDTO
 
     public decimal PrecoUnitario { get; set; }
 
-    public decimal ValorTotal { get; set; }
+    [JsonIgnore]
+    public decimal ValorTotal => Quantidade * PrecoUnitario; 
 }

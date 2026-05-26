@@ -10,7 +10,7 @@ public class Pedido : Entity
     public string ClienteNome { get; private set; } = string.Empty;
     public DateTime DataCriacao { get; private set; }
     public StatusPedido Status { get; private set; }
-    public decimal ValorTotal => _itens.Sum(x => x.ValorTotal);
+    public decimal ValorTotal { get; private set; }
     public IReadOnlyCollection<ItemPedido> Itens => _itens;
 
     // EF Core
@@ -25,8 +25,14 @@ public class Pedido : Entity
         Status = StatusPedido.Novo;
 
         _itens.AddRange(itens);
+        CalcularValorTotal();
     }
 
+    private void CalcularValorTotal()
+    {
+        ValorTotal = _itens.Sum(x => x.Quantidade * x.PrecoUnitario);
+    }
+    
     public void Cancelar()
     {
         DomainException.When(Status == StatusPedido.Pago, "Pedido pago não pode ser cancelado");
@@ -45,6 +51,7 @@ public class Pedido : Entity
     {
         DomainException.When(Status != StatusPedido.Novo, "Não é possível alterar pedidos finalizados");
         _itens.Add(item);
+        CalcularValorTotal();
     }
 
     private static void Validar(string clienteNome, List<ItemPedido> itens)

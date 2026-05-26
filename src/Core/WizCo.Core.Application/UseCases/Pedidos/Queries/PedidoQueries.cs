@@ -7,7 +7,7 @@ using WizCo.Core.Domain.Interfaces;
 
 namespace WizCo.Core.Application.UseCases.Pedidos.Queries;
 
-public class PedidoQueries : IPedidoQueries
+public sealed class PedidoQueries : IPedidoQueries
 {
     private readonly IPedidoRepository _pedidoRepository;
     private readonly IMapper _mapper;
@@ -18,10 +18,11 @@ public class PedidoQueries : IPedidoQueries
         _mapper = mapper;
     }
 
-    public async Task<Result<PagedResult<PedidoDTO>>> GetAllPagedAsync(int page, int pageSize)
+    public async Task<Result<PagedResult<PedidoDTO>>> GetAllPaged(int page, int pageSize)
     {
-        var pedidos = _pedidoRepository.GetAllPaged(page, pageSize);
-        var response = _mapper.Map<PagedResult<PedidoDTO>>(pedidos);
+        var pedidos = await _pedidoRepository.GetAllAsync();
+        var pedidosDTO = _mapper.Map<IEnumerable<PedidoDTO>>(pedidos);
+        var response = pedidosDTO.ToPagedList(page, pageSize);
 
         return Result<PagedResult<PedidoDTO>>.Ok(response);
     }
@@ -31,17 +32,18 @@ public class PedidoQueries : IPedidoQueries
         var pedido = await _pedidoRepository.GetByIdAsync(id);
 
         if (pedido is null)
-            throw new Exception("Pedido não encontrado");
+            return Result<PedidoDTO>.Failure("Pedido não encontrado");
         
         var response = _mapper.Map<PedidoDTO>(pedido);
         
         return Result<PedidoDTO>.Ok(response);
     }
 
-    public async Task<Result<PagedResult<PedidoDTO>>> GetByStatusPagedAsync(StatusPedido? status, int page, int pageSize)
+    public async Task<Result<PagedResult<PedidoDTO>>> GetByStatusPaged(StatusPedido? status, int page, int pageSize)
     {
         var pedidos = await _pedidoRepository.GetByStatusAsync(status, page, pageSize);
-        var response = _mapper.Map<PagedResult<PedidoDTO>>(pedidos);
+        var pedidosDto = _mapper.Map<IEnumerable<PedidoDTO>>(pedidos);
+        var response = pedidosDto.ToPagedList(page, pageSize);
         
         return Result<PagedResult<PedidoDTO>>.Ok(response); 
     }

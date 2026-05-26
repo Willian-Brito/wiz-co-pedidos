@@ -12,7 +12,7 @@ public static class DependencyInjectionSwagger
         {
             config.SwaggerDoc("v1", new OpenApiInfo 
             { 
-                Title = "Pedidos - API", 
+                Title = "WizCo - Pedidos API", 
                 Description = "Desenvolvido por Willian Brito",
                 Version = "v1",
                 Contact = new OpenApiContact { Name = "Willian Brito", Email = "contato@wiz.co" },

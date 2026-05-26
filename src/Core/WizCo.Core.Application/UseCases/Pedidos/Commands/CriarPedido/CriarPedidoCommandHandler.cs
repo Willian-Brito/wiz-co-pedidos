@@ -8,7 +8,7 @@ using WizCo.Core.Domain.Interfaces;
 
 namespace WizCo.Core.Application.UseCases.Pedidos.Commands.CriarPedido;
 
-public class CriarPedidoCommandHandler : CommandHandler, IRequestHandler<CriarPedidoCommand, Result<PedidoDTO>>
+public sealed class CriarPedidoCommandHandler : CommandHandler, IRequestHandler<CriarPedidoCommand, Result<PedidoDTO>>
 {
     private readonly IPedidoRepository _pedidoRepository;
     private readonly IUnitOfWork _unitOfWork;

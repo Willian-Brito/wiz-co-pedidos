@@ -7,9 +7,9 @@ using WizCo.Infra.Data.Context;
 
 namespace WizCo.Infra.Data.Repositories;
 
-public class PedidoRepository : IPedidoRepository
+public sealed class PedidoRepository : IPedidoRepository
 {
-    public IUnitOfWork UnitOfWork { get; }
+    public IUnitOfWork UnitOfWork => _context;
     private readonly PedidoDbContext _context;
 
     public PedidoRepository(PedidoDbContext context)
@@ -53,7 +53,9 @@ public class PedidoRepository : IPedidoRepository
 
     public async Task<Pedido?> GetByIdAsync(Guid id)
     {
-        return await _context.Pedidos.FirstOrDefaultAsync(i => i.Id == id);
+        return await _context.Pedidos
+            .Include(x => x.Itens)
+            .FirstOrDefaultAsync(i => i.Id == id);
     }
 
     public async Task<IEnumerable<Pedido>> GetByStatusAsync(StatusPedido? status, int page, int pageSize)
