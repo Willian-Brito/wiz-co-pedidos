@@ -7,15 +7,10 @@ namespace WizCo.Core.Domain.Entities;
 public class Pedido : Entity
 {
     private readonly List<ItemPedido> _itens = [];
-
     public string ClienteNome { get; private set; } = string.Empty;
-
     public DateTime DataCriacao { get; private set; }
-
     public StatusPedido Status { get; private set; }
-
     public decimal ValorTotal => _itens.Sum(x => x.ValorTotal);
-
     public IReadOnlyCollection<ItemPedido> Itens => _itens;
 
     // EF Core
