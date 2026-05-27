@@ -383,6 +383,7 @@ docker compose up -d
 ✅ Push Docker Hub
 ```
 
+---
 
 ## 🚀 Como Executar o Projeto
 
