@@ -83,9 +83,6 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
 
-      - name: List files
-        run: ls -R
-
       - name: Restore
         run: |
             dotnet restore ./WizCo.slnx
@@ -102,3 +99,230 @@ jobs:
         with:
             name: dotnet-test-results
             path: ./src/TestResults 
+
+  # ======================================================
+  # 3. Análise de Segurança de Código (SAST)
+  # ======================================================
+  sast:
+    runs-on: ubuntu-latest
+    needs: versioning
+    name: SAST - Horusec Scan
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: SAST - Horusec Run
+        run: |
+          curl -sL https://raw.githubusercontent.com/Willian-Brito/dev-sec-ops-learning/refs/heads/main/tools/horusec/horusec_docker_linux.sh| bash
+
+      - name: SAST - Horusec Report Generation
+        run: |
+          cd reports
+          curl -sL https://raw.githubusercontent.com/Willian-Brito/dev-sec-ops-learning/refs/heads/main/tools/horusec/horusec_json2md/horusec_json2md.py -o horusec_json2md.py 
+          python3 horusec_json2md.py horusec_report.json horusec_report.md       
+
+      - name: SAST - Horusec Upload Report Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: horusec-report
+          path: reports/horusec_report.md
+
+      - name: SAST - Horusec Results In Summary
+        run: cat reports/horusec_report.md >> $GITHUB_STEP_SUMMARY
+
+  # ======================================================
+  # 4.  Análise de Segurança das Dependências (SCA)
+  # ======================================================  
+  sca:
+    needs: versioning
+    runs-on: ubuntu-latest
+    name: SCA - Dependency Check Scan
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Setup Java (required for Dependency-Check)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Run OWASP Dependency-Check
+        
+        uses: dependency-check/Dependency-Check_Action@main
+        id: depcheck
+        with:
+          project: '${{ github.repository }}'
+          path: '.'
+          format: 'SARIF'          
+          out: 'reports'
+          args: |   
+            --format HTML           
+            --scan .
+            --enableRetired
+        env:
+          JAVA_HOME: /opt/jdk
+
+      - name: Upload vulnerability report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-check-report
+          path: reports/dependency-check-report.html
+
+  # ======================================================
+  # 5. Análise de Vazamentos de Informações Sensíveis
+  # ======================================================
+  secrets-scan:
+    needs: versioning
+    name: Secret Scan - Gitleaks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # histórico completo para detectar segredos antigos
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          
+        continue-on-error: true  # não bloqueia por ser demo educacional
+
+  # ======================================================
+  # 6. Análise de Segurança de Infra como Código (IaC)
+  # ======================================================
+  iac:
+    needs: versioning
+    runs-on: ubuntu-latest
+    name: IaC - Kics Scan
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Kics Scan
+        uses: checkmarx/kics-github-action@v2.1.20
+        with:          
+          path: '.'
+          ignore_on_exit: results
+          output_path: reports/
+          output_formats: 'sarif'
+
+      - name: Display kics results
+        run: |
+          cat reports/results.sarif
+
+      - name: Upload vulnerability report        
+        uses: actions/upload-artifact@v4
+        with:
+          name: kics-report
+          path: reports/
+
+  # ======================================================
+  # 7. Build das Imagens Docker (client + server)
+  # ======================================================
+  docker-build:
+    needs: [versioning, sast, sca, secrets-scan, iac]
+    runs-on: ubuntu-latest
+    name: Build Docker Images
+
+    env:
+      version: ${{ needs.versioning.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Listing (Debug)
+        run: ls -la
+      
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ vars.DOCKERHUB_REPOSITORY }}/wizco-api:${{ env.version }} \
+            -f app/server/Presentation/Api/Dockerfile .
+
+      - name: Save Docker images as artifact
+        run: |
+          docker save ${{ vars.DOCKERHUB_REPOSITORY }}/wizco-api:${{ env.version }} -o wizco-api.tar          
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docker-images
+          path: |
+            wizco-api.tar
+
+  # ======================================================
+  # 8. Analise de Segurança da Imagem Docker
+  # ======================================================
+  container-scan:
+    needs: [versioning, docker-build]
+    runs-on: ubuntu-latest
+    name: Container Scan - Trivy Scan Docker Images
+
+    env:
+      version: ${{ needs.versioning.outputs.version }}
+
+    steps:
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: .
+
+      - name: Load Docker images
+        run: |
+          docker load -i wizco-api.tar          
+
+      - name: Run Trivy Scan - Server
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'image'
+          image-ref: '${{ vars.DOCKERHUB_REPOSITORY }}/wizco-api:${{ env.version }}'
+          severity: 'MEDIUM,HIGH,CRITICAL'          
+          format: 'sarif'          
+          output: 'trivy.sarif'
+          exit-code: '0'
+      
+      - name: Upload Trivy Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-reports
+          path: |
+            trivy.sarif
+
+  # ======================================================
+  # 9. Push da Imagem para o Docker Hub
+  # ======================================================
+  docker-push:
+    needs: [versioning, container-scan]
+    runs-on: ubuntu-latest
+    name: Push Docker Images
+
+    env:
+      version: ${{ needs.versioning.outputs.version }}
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-images
+          path: .
+
+      - name: Load Docker images
+        run: |
+          docker load -i wizco-api.tar          
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag Images as Latest
+        run: |
+          docker tag ${{ vars.DOCKERHUB_REPOSITORY }}/wizco-api:${{ env.version }} \
+                      ${{ vars.DOCKERHUB_REPOSITORY }}/wizco-api:latest
+        if: github.ref == 'refs/heads/main'
+
+      - name: Push Docker Images
+        run: |
+          docker push --all-tags ${{ vars.DOCKERHUB_REPOSITORY }}/wizco-api          
