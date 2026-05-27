@@ -13,7 +13,7 @@ public abstract class Command<TResponse> : IRequest<TResponse>
 
     protected Command()
     {
-        Timestamp = DateTime.UtcNow;
+        Timestamp = DateTime.Now;
         ValidationResult = new ValidationResult();
     }
 

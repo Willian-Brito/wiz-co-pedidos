@@ -22,8 +22,10 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
+{
     app.UseSwaggerConfiguration();
+}
 
 app.UseRouting();
 app.ApplyMigrations();

@@ -21,7 +21,7 @@ public class Pedido : Entity
         Validar(clienteNome, itens);
 
         ClienteNome = clienteNome;
-        DataCriacao = DateTime.UtcNow;
+        DataCriacao = DateTime.Now;
         Status = StatusPedido.Novo;
 
         _itens.AddRange(itens);

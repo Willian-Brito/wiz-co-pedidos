@@ -1,0 +1,21 @@
+services:
+
+  wizco-api:
+    image: willianbrito00/wizco-api:${TAG:-latest}
+    container_name: wizco-api
+    build:
+      context: .
+      dockerfile: src/Presentation/WizCo.Presentation.WebAPI/Dockerfile
+
+
+    ports:
+      - "5215:8080"
+
+    volumes:
+      - sqlite_data:/app/data
+
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+
+volumes:
+  sqlite_data:
