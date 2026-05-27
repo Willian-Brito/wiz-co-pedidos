@@ -126,6 +126,8 @@ Bancos relacionais trabalham muito bem com dados estruturados e relacionamentos 
 
 Já bancos não relacionais oferecem mais flexibilidade de estrutura e costumam ser escolhidos em cenários de grande escala, alta distribuição ou dados menos estruturados.
 
+---
+
 ## </> Teste Prático de Código
 
 ### 🚀 WizCo - API de Gestão de Pedidos
