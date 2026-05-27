@@ -36,3 +36,8 @@ app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();
+
+namespace WizCo.Presentation.WebAPI
+{
+    public partial class Program;
+}

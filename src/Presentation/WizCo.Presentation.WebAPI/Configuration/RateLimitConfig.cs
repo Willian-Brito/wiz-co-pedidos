@@ -20,7 +20,7 @@ public static class RateLimitConfig
                         ip,
                         _ => new SlidingWindowRateLimiterOptions
                         {
-                            PermitLimit = 5,
+                            PermitLimit = 30,
                             Window = TimeSpan.FromMinutes(1),
                             SegmentsPerWindow = 6,
                             QueueLimit = 0,
