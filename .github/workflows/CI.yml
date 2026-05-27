@@ -83,17 +83,23 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
 
+      - name: List files
+        run: ls -R 
+
+      - name: Find solution
+        run: find . -name "*.sln"
+
       - name: Restore
         run: |
-            dotnet restore ./WizCo.sln
+            dotnet restore ./src/WizCo.sln
   
       - name: Build
         run: |          
-            dotnet build --no-restore --configuration Release ./WizCo.sln
+            dotnet build --no-restore --configuration Release ./src/WizCo.sln
       
       - name: Test
         run: |                          
-            dotnet test ./WizCo.sln --no-restore --no-build --configuration Release --logger trx --results-directory "TestResults"
+            dotnet test ./src/WizCo.sln --no-restore --no-build --configuration Release --logger trx --results-directory "TestResults"
 
       - uses: actions/upload-artifact@v4
         with:
