@@ -1,4 +1,7 @@
+[![Continuous Integration](https://github.com/Willian-Brito/wiz-co-pedidos/actions/workflows/CI.yml/badge.svg)](https://github.com/Willian-Brito/wiz-co-pedidos/actions/workflows/ci.yml)
+
 # 🏦 Wiz Co - Teste para Desenvolvedor Backend .NET
+
 Este repositório foi criado para realizar o teste de desenvolvedor backend .net da empresa Wiz Co
 
 ## 📚 Teste Teórico — Respostas
@@ -263,47 +266,47 @@ Foram adicionadas ferramentas de análise de segurança na pipeline para aproxim
 
 ### 🔓 Autenticação
 
-#### 🔷 Registrar usuário
+#### 🔹 Registrar usuário
 ```http
 POST /api/auth/registrar
 ```
 
-#### 🔷 Login
+#### 🔹 Login
 ```http
 POST /api/auth/login
 ```
 
 ### 📦 Pedidos
 
-#### 🔷 Criar pedido
+#### 🔹 Criar pedido
 ```http
 POST /api/pedidos
 ```
 
-#### 🔷 Buscar pedido por ID
+#### 🔹 Buscar pedido por ID
 ```http
 POST /api/pedidos/{id}
 ```
 
-#### 🔷 Buscar pedidos por status
+#### 🔹 Buscar pedidos por status
 ```http
 POST /api/pedidos?status=Pago
 ```
 
-#### 🔷 Cancelar pedido
+#### 🔹 Cancelar pedido
 
 ```http
 PUT /api/pedidos/{id}/cancelar
 ```
 
-#### 🔷 Pagar pedido
+#### 🔹 Pagar pedido
 
 ```http
 PUT /api/pedidos/{id}/pagar
 ```
 
 ### 🧰 Tecnologias Utilizadas
-#### 🔶 Backend
+#### 🔸 Backend
 - .NET 8
 - ASP.NET Core
 - Entity Framework Core
@@ -314,12 +317,12 @@ PUT /api/pedidos/{id}/pagar
 - ASP.NET Identity
 - JWT Bearer
 
-#### 🔶 Testes
+#### 🔸 Testes
 - xUnit
 - Moq
 - FluentAssertions
 
-#### 🔶 DevOps / DevSecOps
+#### 🔸 DevOps / DevSecOps
 - Docker
 - Docker Compose
 - GitHub Actions
