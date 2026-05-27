@@ -1,10 +1,12 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WizCo.Core.Domain.Entities;
 using WizCo.Core.Domain.Interfaces;
+using WizCo.Infra.Data.Identity;
 
 namespace WizCo.Infra.Data.Context;
 
-public class PedidoDbContext : DbContext, IUnitOfWork
+public class PedidoDbContext : IdentityDbContext<ApplicationUser>, IUnitOfWork
 {
     public DbSet<Pedido> Pedidos => Set<Pedido>();
 

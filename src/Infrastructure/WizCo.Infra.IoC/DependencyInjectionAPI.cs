@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ using WizCo.Core.Application.UseCases.Pedidos.DTOs;
 using WizCo.Core.Application.UseCases.Pedidos.Queries;
 using WizCo.Core.Domain.Interfaces;
 using WizCo.Infra.Data.Context;
+using WizCo.Infra.Data.Identity;
 using WizCo.Infra.Data.Repositories;
 
 namespace WizCo.Infra.IoC;
@@ -34,10 +36,26 @@ public static class DependencyInjectionAPI
         
         // Application
         services.AddScoped<IMessageBus, MessageBus>();
-        
-        // Commands
         services.AddScoped<IRequestHandler<CriarPedidoCommand, Result<PedidoDTO>>, CriarPedidoCommandHandler>();
         services.AddScoped<IRequestHandler<CancelarPedidoCommand, Result>, CancelarPedidoCommandHandler>();
+        
+        // Identity
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IAuthenticateService, AuthenticateService>();
+        services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<PedidoDbContext>()
+            .AddDefaultTokenProviders();
+
+        services.Configure<IdentityOptions>(options =>
+        {
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+
+            options.Password.RequiredLength = 8;
+            options.Password.RequiredUniqueChars = 0;
+        });
         
         // Auto Mapper
         services.AddAutoMapper(typeof(PedidoMappingProfile));

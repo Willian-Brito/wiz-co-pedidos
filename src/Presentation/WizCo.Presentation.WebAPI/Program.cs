@@ -15,18 +15,22 @@ builder.Services
 
 builder.Services.AddApiConfig();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructureJWT(builder.Configuration);
+builder.Services.AddRateLimiting();
 builder.Services.AddInfrastructureSwagger();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
-app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
     app.UseSwaggerConfiguration();
 
-app.UseHttpsRedirection();
+app.UseRouting();
+app.ApplyMigrations();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware<ExceptionMiddleware>();
+app.UseRateLimiter();
 app.MapControllers();
 
 app.Run();

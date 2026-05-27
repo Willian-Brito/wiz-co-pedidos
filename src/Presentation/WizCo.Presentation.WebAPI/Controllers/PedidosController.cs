@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using WizCo.Core.Application.Communication;
 using WizCo.Core.Application.Results;
 using WizCo.Core.Application.UseCases.Pedidos.Commands.CancelarPedido;
@@ -12,6 +14,8 @@ using WizCo.Core.Domain.Enums;
 namespace WizCo.Presentation.WebAPI.Controllers;
 
 [ApiController]
+[Authorize]
+[EnableRateLimiting("Api")]
 [Route("api/[controller]")]
 public class PedidosController : ControllerBase
 {
