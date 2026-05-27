@@ -239,7 +239,7 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ${{ vars.DOCKERHUB_REPOSITORY }}/wizco-api:${{ env.version }} \
-            -f app/server/Presentation/Api/Dockerfile .
+            -f src/Presentation/WizCo.Presentation.WebAPI/Dockerfile .
 
       - name: Save Docker images as artifact
         run: |
