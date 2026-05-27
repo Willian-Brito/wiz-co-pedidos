@@ -223,7 +223,7 @@ jobs:
   # 7. Build das Imagens Docker (client + server)
   # ======================================================
   docker-build:
-    needs: [versioning, sast, sca, secrets-scan, iac]
+    needs: [versioning, build-and-test]
     runs-on: ubuntu-latest
     name: Build Docker Images
 
